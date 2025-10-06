@@ -14,16 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      download_links: {
+        Row: {
+          created_at: string
+          id: string
+          resolution: string
+          resolution_img: string | null
+          server: string
+          size: string
+          url: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resolution: string
+          resolution_img?: string | null
+          server: string
+          size: string
+          url: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resolution?: string
+          resolution_img?: string | null
+          server?: string
+          size?: string
+          url?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_links_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      video_cast: {
+        Row: {
+          character: string
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          video_id: string
+        }
+        Insert: {
+          character: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          video_id: string
+        }
+        Update: {
+          character?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_cast_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      videos: {
+        Row: {
+          created_at: string
+          director: string | null
+          duration: string
+          file_size: string | null
+          format: string | null
+          genre: string
+          id: string
+          is_series: boolean | null
+          poster_url: string | null
+          quality: string | null
+          rating: string | null
+          release_date: string | null
+          seasons: number | null
+          subtitle_info: string | null
+          synopsis: string | null
+          title: string
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          director?: string | null
+          duration: string
+          file_size?: string | null
+          format?: string | null
+          genre: string
+          id?: string
+          is_series?: boolean | null
+          poster_url?: string | null
+          quality?: string | null
+          rating?: string | null
+          release_date?: string | null
+          seasons?: number | null
+          subtitle_info?: string | null
+          synopsis?: string | null
+          title: string
+          updated_at?: string
+          year: string
+        }
+        Update: {
+          created_at?: string
+          director?: string | null
+          duration?: string
+          file_size?: string | null
+          format?: string | null
+          genre?: string
+          id?: string
+          is_series?: boolean | null
+          poster_url?: string | null
+          quality?: string | null
+          rating?: string | null
+          release_date?: string | null
+          seasons?: number | null
+          subtitle_info?: string | null
+          synopsis?: string | null
+          title?: string
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +315,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

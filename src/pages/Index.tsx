@@ -1,12 +1,161 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Header } from "@/components/Header";
+import { VideoCard } from "@/components/VideoCard";
+import { useSearchParams } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Film, Tv } from "lucide-react";
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search");
+
+  const { data: videos, isLoading } = useQuery({
+    queryKey: ["videos", searchQuery],
+    queryFn: async () => {
+      let query = supabase.from("videos").select("*").order("created_at", { ascending: false });
+
+      if (searchQuery) {
+        query = query.or(`title.ilike.%${searchQuery}%,genre.ilike.%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const movies = videos?.filter((v) => !v.is_series) || [];
+  const series = videos?.filter((v) => v.is_series) || [];
+
+  const genres = [...new Set(videos?.flatMap((v) => v.genre.split(",").map((g) => g.trim())) || [])];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
+        <div className="container relative">
+          <div className="max-w-3xl">
+            <h1 className="text-6xl font-bold mb-4 text-gradient">
+              Stream Unlimited
+            </h1>
+            <p className="text-2xl text-muted-foreground mb-8">
+              Your gateway to endless entertainment. Watch and download the latest movies and series.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="container py-12">
+        {searchQuery && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-2">
+              Search results for "{searchQuery}"
+            </h2>
+            <p className="text-muted-foreground">Found {videos?.length || 0} results</p>
+          </div>
+        )}
+
+        {/* Genre Filter */}
+        {!searchQuery && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-3">Browse by Genre</h3>
+            <div className="flex flex-wrap gap-2">
+              {genres.slice(0, 10).map((genre) => (
+                <Badge key={genre} variant="secondary" className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
+                  {genre}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Tabs defaultValue="movies" className="space-y-8">
+          <TabsList>
+            <TabsTrigger value="movies" className="space-x-2">
+              <Film className="h-4 w-4" />
+              <span>Movies</span>
+            </TabsTrigger>
+            <TabsTrigger value="series" className="space-x-2">
+              <Tv className="h-4 w-4" />
+              <span>TV Series</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="movies">
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                    <div className="h-4 bg-secondary rounded mb-2" />
+                    <div className="h-3 bg-secondary rounded w-2/3" />
+                  </div>
+                ))}
+              </div>
+            ) : movies.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {movies.map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    id={video.id}
+                    title={video.title}
+                    year={video.year}
+                    rating={video.rating}
+                    genre={video.genre}
+                    posterUrl={video.poster_url}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No movies found</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="series">
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                    <div className="h-4 bg-secondary rounded mb-2" />
+                    <div className="h-3 bg-secondary rounded w-2/3" />
+                  </div>
+                ))}
+              </div>
+            ) : series.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {series.map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    id={video.id}
+                    title={video.title}
+                    year={video.year}
+                    rating={video.rating}
+                    genre={video.genre}
+                    posterUrl={video.poster_url}
+                    isSeries={video.is_series}
+                    seasons={video.seasons}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No series found</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </section>
     </div>
   );
 };
