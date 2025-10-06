@@ -1,11 +1,39 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { Search, Film } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Film, Settings } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+const ADMIN_EMAIL = "thewayofthedragg@gmail.com";
 
 export const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin", session?.user?.id],
+    enabled: !!session?.user?.id,
+    queryFn: async () => {
+      if (session?.user.email !== ADMIN_EMAIL) return false;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session!.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +62,15 @@ export const Header = () => {
             />
           </div>
         </form>
+
+        {isAdmin && (
+          <Button asChild variant="default" size="sm">
+            <Link to="/admin" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Admin Panel
+            </Link>
+          </Button>
+        )}
       </div>
     </header>
   );

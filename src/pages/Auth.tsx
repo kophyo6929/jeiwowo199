@@ -8,36 +8,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Film } from "lucide-react";
 
+const ADMIN_EMAIL = "thewayofthedragg@gmail.com";
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (email !== ADMIN_EMAIL) {
+      toast.error("Unauthorized access");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-        toast.success("Welcome back!");
-        navigate("/");
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-        toast.success("Account created! Please check your email.");
-      }
+      if (error) throw error;
+      toast.success("Welcome back, Admin!");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -53,9 +50,7 @@ export default function Auth() {
             <Film className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="text-3xl text-gradient">HomieTV</CardTitle>
-          <CardDescription>
-            {isLogin ? "Welcome back" : "Create your account"}
-          </CardDescription>
+          <CardDescription>Admin Login</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
@@ -82,19 +77,9 @@ export default function Auth() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+              {loading ? "Loading..." : "Sign In"}
             </Button>
           </form>
-
-          <div className="mt-4 text-center text-sm">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:underline"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-            </button>
-          </div>
         </CardContent>
       </Card>
     </div>
