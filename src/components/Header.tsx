@@ -20,20 +20,8 @@ export const Header = () => {
     },
   });
 
-  const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin", session?.user?.id],
-    enabled: !!session?.user?.id,
-    queryFn: async () => {
-      if (session?.user.email !== ADMIN_EMAIL) return false;
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session!.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      return !!data;
-    },
-  });
+  // Check if logged-in user is admin
+  const isAdmin = session?.user?.email === ADMIN_EMAIL;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
