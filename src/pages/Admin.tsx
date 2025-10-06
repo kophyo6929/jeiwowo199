@@ -175,11 +175,47 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
 
   const [telegramLink, setTelegramLink] = useState(video?.telegram_link || "");
   const [cast, setCast] = useState(video?.cast || "");
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadPoster = async () => {
+    if (!posterFile) return formData.poster_url;
+
+    setUploading(true);
+    try {
+      const fileExt = posterFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('posters')
+        .upload(filePath, posterFile, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('posters')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error: any) {
+      toast.error("Failed to upload poster: " + error.message);
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      const posterUrl = await uploadPoster();
+      
       const dataToSave = {
         ...formData,
+        poster_url: posterUrl,
         telegram_link: telegramLink,
         cast,
       };
@@ -197,8 +233,8 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
       toast.success(video ? "Video updated!" : "Video added!");
       onClose();
     },
-    onError: () => {
-      toast.error("Failed to save video");
+    onError: (error: any) => {
+      toast.error("Failed to save video: " + error.message);
     },
   });
 
@@ -232,14 +268,34 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="poster_url">Poster Image URL *</Label>
+        <Label htmlFor="poster_image">Poster Image *</Label>
         <Input
-          id="poster_url"
-          value={formData.poster_url}
-          onChange={(e) => setFormData({ ...formData, poster_url: e.target.value })}
-          placeholder="https://example.com/poster.jpg"
-          required
+          id="poster_image"
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setPosterFile(file);
+              // Show preview
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setFormData({ ...formData, poster_url: reader.result as string });
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+          required={!video && !formData.poster_url}
         />
+        {formData.poster_url && (
+          <div className="mt-2">
+            <img
+              src={formData.poster_url}
+              alt="Poster preview"
+              className="w-32 h-48 object-cover rounded border"
+            />
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -347,8 +403,8 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="submit" disabled={saveMutation.isPending}>
-          {saveMutation.isPending ? "Saving..." : "Save"}
+        <Button type="submit" disabled={saveMutation.isPending || uploading}>
+          {uploading ? "Uploading..." : saveMutation.isPending ? "Saving..." : "Save"}
         </Button>
       </div>
     </form>
