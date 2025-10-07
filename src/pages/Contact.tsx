@@ -13,7 +13,15 @@ const Contact = () => {
           <div className="space-y-4">
             <div>
               <h2 className="text-2xl font-semibold mb-2">Email</h2>
-              <p className="text-muted-foreground">contact@homietv.com</p>
+              <p className="text-muted-foreground">thewayofthedragg@gmail.com</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Telegram</h2>
+              <p className="text-muted-foreground">@ceo_metaverse</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Viber</h2>
+              <p className="text-muted-foreground">09883249943</p>
             </div>
           </div>
         </div>
