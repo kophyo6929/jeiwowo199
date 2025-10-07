@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Star, Calendar, Clock, Film, Download } from "lucide-react";
 import { Header } from "@/components/Header";
+import { Advertisement } from "@/components/Advertisement";
 
 export default function VideoDetail() {
   const { id } = useParams();
@@ -167,6 +168,9 @@ export default function VideoDetail() {
 
       <div className="container py-12">
         <div className="space-y-8 max-w-4xl mx-auto">
+          {/* Top Ad */}
+          <Advertisement placement="video-top" />
+
           {/* Main Content */}
           <div className="space-y-8">
             {/* Synopsis */}
@@ -211,6 +215,9 @@ export default function VideoDetail() {
               </Card>
             )}
           </div>
+
+          {/* Download Section Ad */}
+          <Advertisement placement="download-section" />
 
           {/* Download Links */}
           {(video.telegram_link || (downloadLinks && downloadLinks.length > 0)) && (
@@ -281,6 +288,9 @@ export default function VideoDetail() {
                 </CardContent>
               </Card>
             )}
+
+          {/* Bottom Ad */}
+          <Advertisement placement="video-bottom" />
         </div>
       </div>
     </div>

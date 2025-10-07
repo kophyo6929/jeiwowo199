@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Plus, Trash2, Edit } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,8 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<any>(null);
+  const [isAdDialogOpen, setIsAdDialogOpen] = useState(false);
+  const [editingAd, setEditingAd] = useState<any>(null);
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -51,6 +55,20 @@ export default function Admin() {
     },
   });
 
+  const { data: advertisements } = useQuery({
+    queryKey: ["adminAdvertisements"],
+    enabled: isAdmin === true,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("advertisements" as any)
+        .select("*")
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("videos").delete().eq("id", id);
@@ -62,6 +80,20 @@ export default function Admin() {
     },
     onError: () => {
       toast.error("Failed to delete video");
+    },
+  });
+
+  const deleteAdMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("advertisements" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAdvertisements"] });
+      toast.success("Advertisement deleted successfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete advertisement");
     },
   });
 
@@ -87,72 +119,155 @@ export default function Admin() {
       <Header />
 
       <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Admin Panel</h1>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingVideo(null)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Video
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingVideo ? "Edit Video" : "Add New Video"}</DialogTitle>
-              </DialogHeader>
-              <VideoForm
-                video={editingVideo}
-                onClose={() => {
-                  setIsDialogOpen(false);
-                  setEditingVideo(null);
-                }}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <h1 className="text-4xl font-bold mb-8">Admin Panel</h1>
 
-        <div className="grid gap-4">
-          {videos?.map((video) => (
-            <Card key={video.id}>
-              <CardContent className="flex items-center justify-between p-6">
-                <div className="flex items-center space-x-4">
-                  {video.poster_url && (
-                    <img
-                      src={video.poster_url}
-                      alt={video.title}
-                      className="w-16 h-24 object-cover rounded"
-                    />
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-lg">{video.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {video.year} • {video.genre}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setEditingVideo(video);
-                      setIsDialogOpen(true);
+        <Tabs defaultValue="videos" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="videos">Videos</TabsTrigger>
+            <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="videos">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold">Manage Videos</h2>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => setEditingVideo(null)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Video
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{editingVideo ? "Edit Video" : "Add New Video"}</DialogTitle>
+                  </DialogHeader>
+                  <VideoForm
+                    video={editingVideo}
+                    onClose={() => {
+                      setIsDialogOpen(false);
+                      setEditingVideo(null);
                     }}
-                  >
-                    <Edit className="h-4 w-4" />
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <div className="grid gap-4">
+              {videos?.map((video) => (
+                <Card key={video.id}>
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="flex items-center space-x-4">
+                      {video.poster_url && (
+                        <img
+                          src={video.poster_url}
+                          alt={video.title}
+                          className="w-16 h-24 object-cover rounded"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-lg">{video.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {video.year} • {video.genre}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setEditingVideo(video);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteMutation.mutate(video.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="advertisements">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold">Manage Advertisements</h2>
+              <Dialog open={isAdDialogOpen} onOpenChange={setIsAdDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => setEditingAd(null)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Advertisement
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteMutation.mutate(video.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{editingAd ? "Edit Advertisement" : "Add New Advertisement"}</DialogTitle>
+                  </DialogHeader>
+                  <AdForm
+                    ad={editingAd}
+                    onClose={() => {
+                      setIsAdDialogOpen(false);
+                      setEditingAd(null);
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <div className="grid gap-4">
+              {advertisements?.map((ad: any) => (
+                <Card key={ad.id}>
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="flex items-center space-x-4">
+                      {ad.image_url && (
+                        <img
+                          src={ad.image_url}
+                          alt={ad.title}
+                          className="w-32 h-20 object-cover rounded"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-lg">{ad.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Placement: {ad.placement}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Status: {ad.is_active ? "Active" : "Inactive"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setEditingAd(ad);
+                          setIsAdDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteAdMutation.mutate(ad.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
@@ -397,6 +512,192 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
           placeholder="https://t.me/..."
           required
         />
+      </div>
+
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saveMutation.isPending || uploading}>
+          {uploading ? "Uploading..." : saveMutation.isPending ? "Saving..." : "Save"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    title: ad?.title || "",
+    placement: ad?.placement || "header",
+    target_url: ad?.target_url || "",
+    image_url: ad?.image_url || "",
+    is_active: ad?.is_active ?? true,
+    display_order: ad?.display_order || 0,
+  });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadImage = async () => {
+    if (!imageFile) return formData.image_url;
+
+    setUploading(true);
+    try {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `ad-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('posters')
+        .upload(filePath, imageFile, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('posters')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error: any) {
+      toast.error("Failed to upload image: " + error.message);
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const imageUrl = await uploadImage();
+      
+      const dataToSave = {
+        ...formData,
+        image_url: imageUrl,
+      };
+
+      if (ad) {
+        const { error } = await supabase.from("advertisements" as any).update(dataToSave).eq("id", ad.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("advertisements" as any).insert(dataToSave);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAdvertisements"] });
+      toast.success(ad ? "Advertisement updated!" : "Advertisement added!");
+      onClose();
+    },
+    onError: (error: any) => {
+      toast.error("Failed to save advertisement: " + error.message);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveMutation.mutate();
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="title">Advertisement Title *</Label>
+        <Input
+          id="title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          placeholder="Enter the title"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="placement">Placement *</Label>
+        <Select
+          value={formData.placement}
+          onValueChange={(value) => setFormData({ ...formData, placement: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select placement" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="header">Header</SelectItem>
+            <SelectItem value="hero">Hero Section</SelectItem>
+            <SelectItem value="sidebar">Sidebar</SelectItem>
+            <SelectItem value="video-top">Video Detail - Top</SelectItem>
+            <SelectItem value="video-bottom">Video Detail - Bottom</SelectItem>
+            <SelectItem value="download-section">Download Section</SelectItem>
+            <SelectItem value="footer">Footer</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="ad_image">Advertisement Image *</Label>
+        <Input
+          id="ad_image"
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setImageFile(file);
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setFormData({ ...formData, image_url: reader.result as string });
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+          required={!ad && !formData.image_url}
+        />
+        {formData.image_url && (
+          <div className="mt-2">
+            <img
+              src={formData.image_url}
+              alt="Ad preview"
+              className="max-w-full h-auto rounded border"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="target_url">Target URL *</Label>
+        <Input
+          id="target_url"
+          value={formData.target_url}
+          onChange={(e) => setFormData({ ...formData, target_url: e.target.value })}
+          placeholder="https://example.com"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="display_order">Display Order</Label>
+        <Input
+          id="display_order"
+          type="number"
+          value={formData.display_order}
+          onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+          placeholder="0"
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="is_active"
+          checked={formData.is_active}
+          onCheckedChange={(checked) =>
+            setFormData({ ...formData, is_active: checked as boolean })
+          }
+        />
+        <Label htmlFor="is_active">Active</Label>
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">

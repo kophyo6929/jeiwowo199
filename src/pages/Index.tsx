@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
+import { Advertisement } from "@/components/Advertisement";
 import { useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +55,11 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Hero Ad */}
+      <div className="container py-4">
+        <Advertisement placement="hero" />
+      </div>
 
       {/* Main Content */}
       <section className="container py-12 space-y-12">
@@ -147,6 +153,9 @@ const Index = () => {
           </>
         ) : (
           <>
+            {/* Sidebar Ad */}
+            <Advertisement placement="sidebar" />
+
             {/* Trending Movies */}
             {trendingMovies.length > 0 && (
               <div>
