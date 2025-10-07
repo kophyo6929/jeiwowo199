@@ -209,33 +209,71 @@ export default function VideoDetail() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Download Links */}
-            {downloadLinks && downloadLinks.length > 0 && (
+            {(video.telegram_link || (downloadLinks && downloadLinks.length > 0)) && (
               <Card className="border-primary/20">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Download className="h-5 w-5" />
-                    <span>Download / Watch</span>
+                    <span>Download Links</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {downloadLinks.map((link) => (
-                    <Button
-                      key={link.id}
-                      asChild
-                      variant="default"
-                      className="w-full justify-between h-auto py-3"
-                    >
-                      <a href={link.url} target="_blank" rel="noopener noreferrer">
-                        <div className="flex flex-col items-start">
-                          <span className="font-semibold">{link.resolution}</span>
-                          <span className="text-xs opacity-80">{link.server} • {link.size}</span>
-                        </div>
-                        {link.resolution_img && (
-                          <img src={link.resolution_img} alt={link.resolution} className="h-6" />
+                <CardContent>
+                  <div className="rounded-lg border overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="text-left text-xs font-semibold p-3 border-b">No</th>
+                          <th className="text-left text-xs font-semibold p-3 border-b">Server Name</th>
+                          <th className="text-left text-xs font-semibold p-3 border-b">Size</th>
+                          <th className="text-left text-xs font-semibold p-3 border-b">Resolution</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {video.telegram_link && (
+                          <tr className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
+                            <td className="p-3 text-sm">1</td>
+                            <td className="p-3">
+                              <a 
+                                href={video.telegram_link} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline font-medium"
+                              >
+                                Telegram
+                              </a>
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">-</td>
+                            <td className="p-3 text-sm">
+                              <Badge variant="secondary">HD</Badge>
+                            </td>
+                          </tr>
                         )}
-                      </a>
-                    </Button>
-                  ))}
+                        {downloadLinks?.map((link, index) => (
+                          <tr key={link.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
+                            <td className="p-3 text-sm">{video.telegram_link ? index + 2 : index + 1}</td>
+                            <td className="p-3">
+                              <a 
+                                href={link.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline font-medium"
+                              >
+                                {link.server}
+                              </a>
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">{link.size}</td>
+                            <td className="p-3">
+                              {link.resolution_img ? (
+                                <img src={link.resolution_img} alt={link.resolution} className="h-5" />
+                              ) : (
+                                <Badge variant="secondary">{link.resolution}</Badge>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CardContent>
               </Card>
             )}
