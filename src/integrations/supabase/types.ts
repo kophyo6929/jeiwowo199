@@ -113,6 +113,7 @@ export type Database = {
       }
       videos: {
         Row: {
+          cast: string | null
           created_at: string
           director: string | null
           duration: string
@@ -128,11 +129,13 @@ export type Database = {
           seasons: number | null
           subtitle_info: string | null
           synopsis: string | null
+          telegram_link: string | null
           title: string
           updated_at: string
           year: string
         }
         Insert: {
+          cast?: string | null
           created_at?: string
           director?: string | null
           duration: string
@@ -148,11 +151,13 @@ export type Database = {
           seasons?: number | null
           subtitle_info?: string | null
           synopsis?: string | null
+          telegram_link?: string | null
           title: string
           updated_at?: string
           year: string
         }
         Update: {
+          cast?: string | null
           created_at?: string
           director?: string | null
           duration?: string
@@ -168,6 +173,7 @@ export type Database = {
           seasons?: number | null
           subtitle_info?: string | null
           synopsis?: string | null
+          telegram_link?: string | null
           title?: string
           updated_at?: string
           year?: string
