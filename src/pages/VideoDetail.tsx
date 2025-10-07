@@ -98,25 +98,25 @@ export default function VideoDetail() {
           </>
         )}
 
-        <div className="container relative h-full flex items-end pb-12">
-          <div className="flex flex-col md:flex-row gap-8 items-end">
+        <div className="container relative h-full flex flex-col items-center justify-end md:flex-row md:items-end pb-8 md:pb-12 px-4">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-end w-full md:w-auto">
             {video.poster_url && (
               <img
                 src={video.poster_url}
                 alt={video.title}
-                className="w-48 md:w-64 rounded-lg shadow-2xl glow flex-shrink-0"
+                className="w-56 md:w-64 rounded-lg shadow-2xl glow flex-shrink-0"
               />
             )}
 
-            <div className="flex-1 pb-4">
-              <Link to="/">
+            <div className="flex-1 pb-4 text-center md:text-left w-full">
+              <Link to="/" className="inline-block">
                 <Button variant="ghost" size="sm" className="mb-4">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back
                 </Button>
               </Link>
 
-              <h1 className="text-5xl font-bold mb-4">{video.title}</h1>
+              <h1 className="text-3xl md:text-5xl font-bold mb-4">{video.title}</h1>
 
               <div className="flex flex-wrap items-center gap-4 mb-4">
                 {video.rating && (
