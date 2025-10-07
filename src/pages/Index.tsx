@@ -2,15 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
-import { useSearchParams } from "react-router-dom";
-import { Input } from "@/components/ui/input";
+import { useSearchParams, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Film, Tv } from "lucide-react";
+import { Film, Tv, TrendingUp } from "lucide-react";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search");
+  const filter = searchParams.get("filter"); // 'movies', 'series', or null for all
 
   const { data: videos, isLoading } = useQuery({
     queryKey: ["videos", searchQuery],
@@ -30,8 +31,10 @@ const Index = () => {
 
   const movies = videos?.filter((v) => !v.is_series) || [];
   const series = videos?.filter((v) => v.is_series) || [];
-
-  const genres = [...new Set(videos?.flatMap((v) => v.genre.split(",").map((g) => g.trim())) || [])];
+  
+  // Get trending (recently added) content - limit to 10
+  const trendingMovies = movies.slice(0, 10);
+  const trendingSeries = series.slice(0, 10);
 
   return (
     <div className="min-h-screen">
@@ -53,108 +56,270 @@ const Index = () => {
       </section>
 
       {/* Main Content */}
-      <section className="container py-12">
-        {searchQuery && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-2">
-              Search results for "{searchQuery}"
-            </h2>
-            <p className="text-muted-foreground">Found {videos?.length || 0} results</p>
-          </div>
-        )}
-
-        {/* Genre Filter */}
-        {!searchQuery && (
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-3">Browse by Genre</h3>
-            <div className="flex flex-wrap gap-2">
-              {genres.slice(0, 10).map((genre) => (
-                <Badge key={genre} variant="secondary" className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
-                  {genre}
-                </Badge>
-              ))}
+      <section className="container py-12 space-y-12">
+        {searchQuery ? (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-2">
+                Search results for "{searchQuery}"
+              </h2>
+              <p className="text-muted-foreground">Found {videos?.length || 0} results</p>
             </div>
-          </div>
+            
+            <Tabs defaultValue="movies" className="space-y-8">
+              <TabsList>
+                <TabsTrigger value="movies" className="space-x-2">
+                  <Film className="h-4 w-4" />
+                  <span>Movies</span>
+                </TabsTrigger>
+                <TabsTrigger value="series" className="space-x-2">
+                  <Tv className="h-4 w-4" />
+                  <span>TV Series</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="movies">
+                {isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                        <div className="h-4 bg-secondary rounded mb-2" />
+                        <div className="h-3 bg-secondary rounded w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                ) : movies.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {movies.map((video) => (
+                      <VideoCard
+                        key={video.id}
+                        id={video.id}
+                        title={video.title}
+                        year={video.year}
+                        rating={video.rating}
+                        genre={video.genre}
+                        posterUrl={video.poster_url}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No movies found</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="series">
+                {isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                        <div className="h-4 bg-secondary rounded mb-2" />
+                        <div className="h-3 bg-secondary rounded w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                ) : series.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {series.map((video) => (
+                      <VideoCard
+                        key={video.id}
+                        id={video.id}
+                        title={video.title}
+                        year={video.year}
+                        rating={video.rating}
+                        genre={video.genre}
+                        posterUrl={video.poster_url}
+                        isSeries={video.is_series}
+                        seasons={video.seasons}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No series found</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </>
+        ) : (
+          <>
+            {/* Trending Movies */}
+            {trendingMovies.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-3xl font-bold flex items-center gap-2">
+                    <TrendingUp className="h-7 w-7 text-primary" />
+                    Trending Movies
+                  </h2>
+                  <Button asChild variant="ghost">
+                    <Link to="/?filter=movies">View All</Link>
+                  </Button>
+                </div>
+                {isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                        <div className="h-4 bg-secondary rounded mb-2" />
+                        <div className="h-3 bg-secondary rounded w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {trendingMovies.map((video) => (
+                      <VideoCard
+                        key={video.id}
+                        id={video.id}
+                        title={video.title}
+                        year={video.year}
+                        rating={video.rating}
+                        genre={video.genre}
+                        posterUrl={video.poster_url}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Trending Series */}
+            {trendingSeries.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-3xl font-bold flex items-center gap-2">
+                    <TrendingUp className="h-7 w-7 text-primary" />
+                    Trending Series
+                  </h2>
+                  <Button asChild variant="ghost">
+                    <Link to="/?filter=series">View All</Link>
+                  </Button>
+                </div>
+                {isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                        <div className="h-4 bg-secondary rounded mb-2" />
+                        <div className="h-3 bg-secondary rounded w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {trendingSeries.map((video) => (
+                      <VideoCard
+                        key={video.id}
+                        id={video.id}
+                        title={video.title}
+                        year={video.year}
+                        rating={video.rating}
+                        genre={video.genre}
+                        posterUrl={video.poster_url}
+                        isSeries={video.is_series}
+                        seasons={video.seasons}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* All Movies Section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold flex items-center gap-2">
+                  <Film className="h-7 w-7 text-primary" />
+                  Movies
+                </h2>
+                {movies.length > 10 && (
+                  <Button asChild variant="ghost">
+                    <Link to="/?filter=movies">View All</Link>
+                  </Button>
+                )}
+              </div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                      <div className="h-4 bg-secondary rounded mb-2" />
+                      <div className="h-3 bg-secondary rounded w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : movies.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {(filter === 'movies' ? movies : movies.slice(0, 10)).map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      year={video.year}
+                      rating={video.rating}
+                      genre={video.genre}
+                      posterUrl={video.poster_url}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No movies available</p>
+                </div>
+              )}
+            </div>
+
+            {/* All Series Section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold flex items-center gap-2">
+                  <Tv className="h-7 w-7 text-primary" />
+                  Series
+                </h2>
+                {series.length > 10 && (
+                  <Button asChild variant="ghost">
+                    <Link to="/?filter=series">View All</Link>
+                  </Button>
+                )}
+              </div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                      <div className="h-4 bg-secondary rounded mb-2" />
+                      <div className="h-3 bg-secondary rounded w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : series.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {(filter === 'series' ? series : series.slice(0, 10)).map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      year={video.year}
+                      rating={video.rating}
+                      genre={video.genre}
+                      posterUrl={video.poster_url}
+                      isSeries={video.is_series}
+                      seasons={video.seasons}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No series available</p>
+                </div>
+              )}
+            </div>
+          </>
         )}
-
-        <Tabs defaultValue="movies" className="space-y-8">
-          <TabsList>
-            <TabsTrigger value="movies" className="space-x-2">
-              <Film className="h-4 w-4" />
-              <span>Movies</span>
-            </TabsTrigger>
-            <TabsTrigger value="series" className="space-x-2">
-              <Tv className="h-4 w-4" />
-              <span>TV Series</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="movies">
-            {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
-                    <div className="h-4 bg-secondary rounded mb-2" />
-                    <div className="h-3 bg-secondary rounded w-2/3" />
-                  </div>
-                ))}
-              </div>
-            ) : movies.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {movies.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    id={video.id}
-                    title={video.title}
-                    year={video.year}
-                    rating={video.rating}
-                    genre={video.genre}
-                    posterUrl={video.poster_url}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No movies found</p>
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="series">
-            {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
-                    <div className="h-4 bg-secondary rounded mb-2" />
-                    <div className="h-3 bg-secondary rounded w-2/3" />
-                  </div>
-                ))}
-              </div>
-            ) : series.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {series.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    id={video.id}
-                    title={video.title}
-                    year={video.year}
-                    rating={video.rating}
-                    genre={video.genre}
-                    posterUrl={video.poster_url}
-                    isSeries={video.is_series}
-                    seasons={video.seasons}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No series found</p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
       </section>
     </div>
   );

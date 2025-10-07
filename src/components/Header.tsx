@@ -33,10 +33,24 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <Film className="h-6 w-6 text-primary" />
-          <span className="text-2xl font-bold text-gradient">HomieTV</span>
-        </Link>
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center space-x-2">
+            <Film className="h-6 w-6 text-primary" />
+            <span className="text-2xl font-bold text-gradient">HomieTV</span>
+          </Link>
+          
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
+              Home
+            </Link>
+            <Link to="/?filter=movies" className="text-sm font-medium transition-colors hover:text-primary">
+              Movies
+            </Link>
+            <Link to="/?filter=series" className="text-sm font-medium transition-colors hover:text-primary">
+              Series
+            </Link>
+          </nav>
+        </div>
 
         <form onSubmit={handleSearch} className="hidden md:flex items-center space-x-2 flex-1 max-w-md mx-8">
           <div className="relative flex-1">
