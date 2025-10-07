@@ -87,7 +87,7 @@ export default function VideoDetail() {
       <Header />
 
       {/* Hero Section */}
-      <div className="relative h-[500px] overflow-hidden">
+      <div className="relative md:h-[500px] overflow-visible">
         {video.poster_url && (
           <>
             <div
