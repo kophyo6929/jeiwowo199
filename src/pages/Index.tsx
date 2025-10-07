@@ -66,15 +66,15 @@ const Index = () => {
               <p className="text-muted-foreground">Found {videos?.length || 0} results</p>
             </div>
             
-            <Tabs defaultValue="movies" className="space-y-8">
+            <Tabs defaultValue={movies.length > 0 ? "movies" : "series"} className="space-y-8">
               <TabsList>
                 <TabsTrigger value="movies" className="space-x-2">
                   <Film className="h-4 w-4" />
-                  <span>Movies</span>
+                  <span>Movies ({movies.length})</span>
                 </TabsTrigger>
                 <TabsTrigger value="series" className="space-x-2">
                   <Tv className="h-4 w-4" />
-                  <span>TV Series</span>
+                  <span>TV Series ({series.length})</span>
                 </TabsTrigger>
               </TabsList>
 

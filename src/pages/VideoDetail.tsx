@@ -104,7 +104,7 @@ export default function VideoDetail() {
               <img
                 src={video.poster_url}
                 alt={video.title}
-                className="w-64 rounded-lg shadow-2xl glow"
+                className="w-48 md:w-64 rounded-lg shadow-2xl glow flex-shrink-0"
               />
             )}
 
@@ -166,9 +166,9 @@ export default function VideoDetail() {
       </div>
 
       <div className="container py-12">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="space-y-8 max-w-4xl mx-auto">
           {/* Main Content */}
-          <div className="md:col-span-2 space-y-8">
+          <div className="space-y-8">
             {/* Synopsis */}
             <Card>
               <CardHeader>
@@ -212,11 +212,9 @@ export default function VideoDetail() {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Download Links */}
-            {(video.telegram_link || (downloadLinks && downloadLinks.length > 0)) && (
-              <Card className="border-primary/20">
+          {/* Download Links */}
+          {(video.telegram_link || (downloadLinks && downloadLinks.length > 0)) && (
+            <Card className="border-primary/20">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Download className="h-5 w-5" />
@@ -283,7 +281,6 @@ export default function VideoDetail() {
                 </CardContent>
               </Card>
             )}
-          </div>
         </div>
       </div>
     </div>
