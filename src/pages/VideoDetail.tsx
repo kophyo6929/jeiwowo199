@@ -277,39 +277,6 @@ export default function VideoDetail() {
                 </CardContent>
               </Card>
             )}
-
-            {/* Video Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                {video.quality && (
-                  <div>
-                    <span className="font-semibold">Quality:</span>
-                    <p className="text-muted-foreground">{video.quality}</p>
-                  </div>
-                )}
-                {video.format && (
-                  <div>
-                    <span className="font-semibold">Format:</span>
-                    <p className="text-muted-foreground">{video.format}</p>
-                  </div>
-                )}
-                {video.file_size && (
-                  <div>
-                    <span className="font-semibold">File Size:</span>
-                    <p className="text-muted-foreground">{video.file_size}</p>
-                  </div>
-                )}
-                {video.subtitle_info && (
-                  <div>
-                    <span className="font-semibold">Subtitle:</span>
-                    <p className="text-muted-foreground">{video.subtitle_info}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
