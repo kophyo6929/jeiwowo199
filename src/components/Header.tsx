@@ -51,7 +51,7 @@ export const Header = () => {
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center space-x-2">
             <Film className="h-6 w-6 text-primary" />
-            <span className="text-2xl font-bold text-gradient">CINEVERSE TV</span>
+            <span className="text-2xl font-bold text-gradient">CINEVERSE</span>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">

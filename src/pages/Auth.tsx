@@ -49,7 +49,7 @@ export default function Auth() {
           <div className="flex justify-center mb-4">
             <Film className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-3xl text-gradient">CINEVERSE TV</CardTitle>
+          <CardTitle className="text-3xl text-gradient">CINEVERSE</CardTitle>
           <CardDescription>Admin Login</CardDescription>
         </CardHeader>
         <CardContent>
