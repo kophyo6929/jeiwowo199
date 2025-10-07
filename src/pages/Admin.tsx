@@ -311,7 +311,7 @@ function VideoForm({ video, onClose }: { video?: any; onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="cast">Cast</Label>
+        <Label htmlFor="cast">Cast (Actors/Actresses - separate by comma)</Label>
         <Input
           id="cast"
           value={cast}

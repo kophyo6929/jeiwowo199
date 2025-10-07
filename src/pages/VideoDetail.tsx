@@ -154,6 +154,12 @@ export default function VideoDetail() {
                   <span className="font-semibold">Director:</span> {video.director}
                 </p>
               )}
+
+              {video.cast && (
+                <p className="text-muted-foreground mb-2">
+                  <span className="font-semibold">Cast:</span> {video.cast}
+                </p>
+              )}
             </div>
           </div>
         </div>
