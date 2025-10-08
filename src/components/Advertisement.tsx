@@ -53,11 +53,22 @@ export function Advertisement({ placement }: AdvertisementProps) {
       rel="noopener noreferrer"
       className="block w-full rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
     >
-      <img
-        src={ad.image_url}
-        alt={ad.title}
-        className="w-full h-auto"
-      />
+      {ad.media_type === 'video' ? (
+        <video
+          src={ad.image_url}
+          controls
+          className="w-full h-auto"
+          preload="metadata"
+        >
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <img
+          src={ad.image_url}
+          alt={ad.title}
+          className="w-full h-auto"
+        />
+      )}
     </a>
   );
 }

@@ -227,16 +227,24 @@ export default function Admin() {
                   <CardContent className="flex items-center justify-between p-6">
                     <div className="flex items-center space-x-4">
                       {ad.image_url && (
-                        <img
-                          src={ad.image_url}
-                          alt={ad.title}
-                          className="w-32 h-20 object-cover rounded"
-                        />
+                        ad.media_type === 'video' ? (
+                          <video
+                            src={ad.image_url}
+                            className="w-32 h-20 object-cover rounded"
+                            muted
+                          />
+                        ) : (
+                          <img
+                            src={ad.image_url}
+                            alt={ad.title}
+                            className="w-32 h-20 object-cover rounded"
+                          />
+                        )
                       )}
                       <div>
                         <h3 className="font-semibold text-lg">{ad.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Placement: {ad.placement}
+                          Placement: {ad.placement} • Type: {ad.media_type}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Status: {ad.is_active ? "Active" : "Inactive"}
@@ -533,6 +541,7 @@ function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
     placement: ad?.placement || "header",
     target_url: ad?.target_url || "",
     image_url: ad?.image_url || "",
+    media_type: ad?.media_type || "image",
     is_active: ad?.is_active ?? true,
     display_order: ad?.display_order || 0,
   });
@@ -638,11 +647,31 @@ function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="ad_image">Advertisement Image *</Label>
+        <Label htmlFor="media_type">Media Type *</Label>
+        <Select
+          value={formData.media_type}
+          onValueChange={(value) => setFormData({ ...formData, media_type: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select media type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="image">Image</SelectItem>
+            <SelectItem value="video">Video</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="ad_media">
+          {formData.media_type === 'video' ? 'Advertisement Video *' : 'Advertisement Image *'}
+        </Label>
         <Input
-          id="ad_image"
+          id="ad_media"
           type="file"
-          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          accept={formData.media_type === 'video' 
+            ? "video/mp4,video/webm,video/ogg" 
+            : "image/jpeg,image/jpg,image/png,image/webp,image/gif"}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
@@ -658,11 +687,21 @@ function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
         />
         {formData.image_url && (
           <div className="mt-2">
-            <img
-              src={formData.image_url}
-              alt="Ad preview"
-              className="max-w-full h-auto rounded border"
-            />
+            {formData.media_type === 'video' ? (
+              <video
+                src={formData.image_url}
+                controls
+                className="max-w-full h-auto rounded border"
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img
+                src={formData.image_url}
+                alt="Ad preview"
+                className="max-w-full h-auto rounded border"
+              />
+            )}
           </div>
         )}
       </div>

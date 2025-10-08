@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      advertisements: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          is_active: boolean
+          media_type: string
+          placement: string
+          target_url: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          is_active?: boolean
+          media_type?: string
+          placement: string
+          target_url: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          media_type?: string
+          placement?: string
+          target_url?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       download_links: {
         Row: {
           created_at: string
