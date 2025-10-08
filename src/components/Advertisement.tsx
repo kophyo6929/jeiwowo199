@@ -56,9 +56,12 @@ export function Advertisement({ placement }: AdvertisementProps) {
       {ad.media_type === 'video' ? (
         <video
           src={ad.image_url}
-          controls
+          autoPlay
+          loop
+          muted
+          playsInline
           className="w-full h-auto"
-          preload="metadata"
+          preload="auto"
         >
           Your browser does not support the video tag.
         </video>
