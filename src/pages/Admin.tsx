@@ -559,7 +559,7 @@ function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('posters')
+        .from('advertisements')
         .upload(filePath, imageFile, {
           cacheControl: '3600',
           upsert: false,
@@ -568,12 +568,12 @@ function AdForm({ ad, onClose }: { ad?: any; onClose: () => void }) {
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('posters')
+        .from('advertisements')
         .getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error: any) {
-      toast.error("Failed to upload image: " + error.message);
+      toast.error("Failed to upload media: " + error.message);
       throw error;
     } finally {
       setUploading(false);

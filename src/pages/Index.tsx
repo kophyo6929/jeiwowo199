@@ -151,6 +151,90 @@ const Index = () => {
               </TabsContent>
             </Tabs>
           </>
+        ) : filter === 'movies' ? (
+          <>
+            {/* Movies Only View */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold flex items-center gap-2">
+                  <Film className="h-7 w-7 text-primary" />
+                  All Movies
+                </h2>
+              </div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                      <div className="h-4 bg-secondary rounded mb-2" />
+                      <div className="h-3 bg-secondary rounded w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : movies.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {movies.map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      year={video.year}
+                      rating={video.rating}
+                      genre={video.genre}
+                      posterUrl={video.poster_url}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No movies available</p>
+                </div>
+              )}
+            </div>
+          </>
+        ) : filter === 'series' ? (
+          <>
+            {/* Series Only View */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold flex items-center gap-2">
+                  <Tv className="h-7 w-7 text-primary" />
+                  All Series
+                </h2>
+              </div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
+                      <div className="h-4 bg-secondary rounded mb-2" />
+                      <div className="h-3 bg-secondary rounded w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : series.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {series.map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      year={video.year}
+                      rating={video.rating}
+                      genre={video.genre}
+                      posterUrl={video.poster_url}
+                      isSeries={video.is_series}
+                      seasons={video.seasons}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No series available</p>
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           <>
             {/* Sidebar Ad */}
@@ -263,7 +347,7 @@ const Index = () => {
                 </div>
               ) : movies.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                  {(filter === 'movies' ? movies : movies.slice(0, 10)).map((video) => (
+                  {movies.slice(0, 10).map((video) => (
                     <VideoCard
                       key={video.id}
                       id={video.id}
@@ -307,7 +391,7 @@ const Index = () => {
                 </div>
               ) : series.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                  {(filter === 'series' ? series : series.slice(0, 10)).map((video) => (
+                  {series.slice(0, 10).map((video) => (
                     <VideoCard
                       key={video.id}
                       id={video.id}
