@@ -86,7 +86,7 @@ const Index = () => {
 
               <TabsContent value="movies">
                 {isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {[...Array(10)].map((_, i) => (
                       <div key={i} className="animate-pulse">
                         <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -96,7 +96,7 @@ const Index = () => {
                     ))}
                   </div>
                 ) : movies.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {movies.map((video) => (
                       <VideoCard
                         key={video.id}
@@ -118,7 +118,7 @@ const Index = () => {
 
               <TabsContent value="series">
                 {isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {[...Array(10)].map((_, i) => (
                       <div key={i} className="animate-pulse">
                         <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -128,7 +128,7 @@ const Index = () => {
                     ))}
                   </div>
                 ) : series.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {series.map((video) => (
                       <VideoCard
                         key={video.id}
@@ -162,7 +162,7 @@ const Index = () => {
                 </h2>
               </div>
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                       <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -172,7 +172,7 @@ const Index = () => {
                   ))}
                 </div>
               ) : movies.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {movies.map((video) => (
                     <VideoCard
                       key={video.id}
@@ -203,7 +203,7 @@ const Index = () => {
                 </h2>
               </div>
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                       <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -213,7 +213,7 @@ const Index = () => {
                   ))}
                 </div>
               ) : series.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {series.map((video) => (
                     <VideoCard
                       key={video.id}
@@ -253,7 +253,7 @@ const Index = () => {
                   </Button>
                 </div>
                 {isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {[...Array(5)].map((_, i) => (
                       <div key={i} className="animate-pulse">
                         <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -263,7 +263,7 @@ const Index = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {trendingMovies.map((video) => (
                       <VideoCard
                         key={video.id}
@@ -293,7 +293,7 @@ const Index = () => {
                   </Button>
                 </div>
                 {isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {[...Array(5)].map((_, i) => (
                       <div key={i} className="animate-pulse">
                         <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -303,7 +303,7 @@ const Index = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {trendingSeries.map((video) => (
                       <VideoCard
                         key={video.id}
@@ -336,7 +336,7 @@ const Index = () => {
                 )}
               </div>
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                       <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -346,7 +346,7 @@ const Index = () => {
                   ))}
                 </div>
               ) : movies.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {movies.slice(0, 10).map((video) => (
                     <VideoCard
                       key={video.id}
@@ -380,7 +380,7 @@ const Index = () => {
                 )}
               </div>
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                       <div className="aspect-[2/3] bg-secondary rounded-lg mb-4" />
@@ -390,7 +390,7 @@ const Index = () => {
                   ))}
                 </div>
               ) : series.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {series.slice(0, 10).map((video) => (
                     <VideoCard
                       key={video.id}
