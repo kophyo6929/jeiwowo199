@@ -41,21 +41,6 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
-        <div className="container relative">
-          <div className="max-w-3xl">
-            <h1 className="text-6xl font-bold mb-4 text-gradient">
-              Stream Unlimited
-            </h1>
-            <p className="text-2xl text-muted-foreground mb-8">
-              Your gateway to endless entertainment. Watch and download the latest movies and series.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Hero Ad */}
       <div className="container py-4">
         <Advertisement placement="hero" />
